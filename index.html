@@ -2,7 +2,7 @@
 <html lang="en"> 
 <head> 
     <meta charset="UTF-8" />
-    <title>Game #2</title>
+    <title>Cupid Can Haz Kittiez?</title>
     <script type="text/javascript" src="js/phaser.min.js"></script>
     <style type="text/css">
         body {
@@ -237,6 +237,8 @@ function create() {
     this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys();
+
+    game.add.text(150, game.camera.y + 300, 'Press SPACEBAR to feel the love', { fontSize: '32px', fill: '#000' });
   
 }
 
