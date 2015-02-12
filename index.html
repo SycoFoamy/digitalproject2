@@ -1,0 +1,330 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8" />
+    <title>Game #2</title>
+    <script type="text/javascript" src="js/phaser.min.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="game">
+<script type="text/javascript">
+
+var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'game', { preload: preload, create: create, update: update });
+
+function preload() {
+
+    game.load.image('sky', 'assets/sky4.png');
+    game.load.image('ground', 'assets/platform2.png');
+    game.load.image('star', 'assets/star.png');
+    game.load.spritesheet('cupid', 'assets/cupid.png', 22, 30);
+
+}
+
+var player;
+var platforms;
+var cursors;
+
+var stars;
+
+function create() {
+
+    //  We're going to be using physics, so enable the Arcade Physics system
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+
+    //  A simple background for our game
+    game.add.tileSprite(0, 0, 800, 3600, 'sky');
+
+    game.world.setBounds(0,0,800,3600);
+
+    platforms = game.add.group();
+
+    platforms.enableBody = true;
+
+    var ledge = platforms.create(400, 200, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(-100, 200, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(680, 450, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(-290, 450, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(200, 450, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(0, 700, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(300, 700, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(400, 950, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(200, 950, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(-300, 950, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(400, 1200, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(100, 1200, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(-380, 1200, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(550, 1450, 'ground');
+    ledge.body.immovable = true;
+    ledge.scale.setTo(.7, 1);
+
+    ledge = platforms.create(170, 1450, 'ground');
+    ledge.body.immovable = true;
+    ledge.scale.setTo(.7, 1);
+
+    ledge = platforms.create(-350, 1450, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(400, 1700, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(200, 1700, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(-300, 1700, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(400, 1950, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(-100, 1950, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(680, 2700, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(-290, 2700, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(200, 2700, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(0, 2450, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(300, 2450, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(400, 2200, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(200, 2200, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(-300, 2200, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(400, 3200, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(100, 3200, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(-380, 3200, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(550, 2950, 'ground');
+    ledge.body.immovable = true;
+    ledge.scale.setTo(.7, 1);
+
+    ledge = platforms.create(170, 2950, 'ground');
+    ledge.body.immovable = true;
+    ledge.scale.setTo(.7, 1);
+
+    ledge = platforms.create(-350, 2950, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(400, 3450, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(200, 3450, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(-300, 3450, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(400, 3590, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(200, 3590, 'ground');
+    ledge.body.immovable = true;
+
+    ledge = platforms.create(0, 3590, 'ground');
+    ledge.body.immovable = true;
+
+    player = game.add.sprite(50, 50, 'cupid');
+    
+    game.physics.arcade.enable(player);
+
+
+    game.camera.follow(player);
+
+
+    
+    player.body.gravity.y = 300;
+    player.body.collideWorldBounds = true;
+
+ 
+    player.animations.add('left', [0, 1, 2], 10, true);
+    player.animations.add('right', [4, 5, 6], 10, true);
+
+   
+    kitties = game.add.group();
+
+
+    kitties.enableBody = true;
+
+    for (var i = 0; i < 12; i++)
+    {
+        //  Create a star inside of the 'stars' group
+        var kitty =  kitties.create((i * game.rnd.integerInRange(0, 800)), i*250, 'star');
+
+        //  Let gravity do its thing
+        kitty.body.gravity.y = 400;
+
+    }
+
+    //  Our controls.
+    cursors = game.input.keyboard.createCursorKeys();
+    
+}
+
+function update() {
+
+    //  Collide the player and the stars with the platforms
+    game.physics.arcade.collide(player, platforms);
+    game.physics.arcade.collide(kitties, platforms);
+
+    //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
+    game.physics.arcade.overlap(player, stars, collectStar, null, this);
+
+    //  Reset the players velocity (movement)
+    player.body.velocity.x = 0;
+
+    if (cursors.left.isDown)
+    {
+        //  Move to the left
+        player.body.velocity.x = -300;
+
+        player.animations.play('left');
+    }
+    else if (cursors.right.isDown)
+    {
+        //  Move to the right
+        player.body.velocity.x = 300;
+
+        player.animations.play('right');
+    }
+    else
+    {
+        //  Stand still
+        player.animations.stop();
+
+        player.frame = 3;
+    }
+    
+    //  Allow the player to jump if they are touching the ground.
+    if (cursors.up.isDown && player.body.touching.down)
+    {
+        player.body.velocity.y = -350;
+    }
+
+}
+
+function collectStar (player, kitty) {
+    
+    // Removes the star from the screen
+    kitty.kill();
+
+}
+
+function render(){
+    game.debug.cameraInfo(game.camera, 32, 32);
+    game.debug.spriteCoords(player, 32, 500);
+}
+
+</script>
+
+
+</div>
+<div id="readme">
+<h2>The Dog Catcher</h2>
+<ul>
+
+<li><strong>High Concept:</strong>
+Dogs are appearing by the second, literally, and as a delegated dog catcher you must detain them all!
+</li>
+
+<li><strong>Player Experience Goals:</strong>
+Players should get a sense of inner peace as they calmly capture each dog as they appear on the ledges, until the controls become screwy and you end up falling off the edge in rage.
+</li>
+
+<li><strong>Genre:</strong>
+Simple arcade style game.
+</li>
+
+<li><strong>Game play:</strong>
+This game uses the four arrow keys for movement (up, down, left, right). If the up button is pressed while the left or right button is held, the catcher will perform a short hop, allowing him to quickly reach platforms on the same level. If the up button is pressed while neither other button is pressed, the catcher will jump signifigantly higher and the catcher can be maneuvered in the air to the left or the right to allow the player to reach the higher platforms. If the player happens to fall into the abyss out of the game window, they must refresh the page by pressing F5 and start over. The game is set to go on for a set amount of dogs, however, the number is set signifigantly high to allow a lot of play time, so don't play til the dogs stop spawning.
+</li>
+
+<li><strong>Prototype goal:</strong>
+The game is prototyping my use of player movement, as well as sprite reviving.
+</li>
+
+<li><strong>Features:</strong>
+While I could have revived the dogs in all of the same spots, I decided to add a random number aspect to the reviving to allow the dogs to be spread out across the platforms in a randomized fashion so the game didn't become over-simplyfied.
+</li>
+
+<li><strong>Setting/Premise:</strong>
+There isn't much to the atmosphere of the game but I did take a while figuring out what kind of background I wanted to have to allow the player an easy way to determine where they could jump and where they shouldn't.
+</li>
+
+<li><strong>Story:</strong>
+N/A
+</li>
+
+<li><strong>Target Audience:</strong>
+A few of my friends have played my game so far so they could be my target audience. Little kids and casual adults would probably enjoy it for its play time.
+</li>
+
+<li><strong>Play time:</strong>
+The game goes on for quite a while but the entirety of the game and its controls can be played and mastered in a few minutes.
+</li>
+
+<li><strong>Strategies:</strong>
+Determining when to use the running jump and when to use the high jump mechanic.
+</li>
+
+<li><strong>Prototype Assets:</strong>
+The sprites, dogs and windows were taken from Google. All rights reserved to the owners of these pictures.
+</li>
+
+<li><strong>Prototype Closest Other Game:</strong>
+My First Phaser Game from PhotonStorm gave me a lot of ideas for my game.
+</li>
+
+</ul>
+</div>
+
+</body>
+</html>
