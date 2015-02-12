@@ -20,16 +20,23 @@ function preload() {
 
     game.load.image('sky', 'assets/sky4.png');
     game.load.image('ground', 'assets/platform2.png');
-    game.load.image('star', 'assets/star.png');
-    game.load.spritesheet('cupid', 'assets/cupid.png', 22, 30);
+    game.load.image('spikes', 'assets/spikes.png');
+    game.load.image('kitty', 'assets/kitty.png');
+    game.load.audio('sfx', 'assets/Voice_003.mp3');
+    game.load.audio('love', 'assets/love.mp3');
+    game.load.spritesheet('cupid', 'assets/cupid2.png', 48, 58);
 
 }
 
 var player;
 var platforms;
 var cursors;
-
-var stars;
+var kitties;
+var spikes;
+var score = 0;
+var fx;
+var spaceKey;
+var mkey;
 
 function create() {
 
@@ -38,7 +45,7 @@ function create() {
 
     //  A simple background for our game
     game.add.tileSprite(0, 0, 800, 3600, 'sky');
-
+    //game.add.sprite(0, -50, 'spikes');
     game.world.setBounds(0,0,800,3600);
 
     platforms = game.add.group();
@@ -172,8 +179,13 @@ function create() {
     ledge = platforms.create(0, 3590, 'ground');
     ledge.body.immovable = true;
 
-    player = game.add.sprite(50, 50, 'cupid');
-    
+
+
+
+    player = game.add.sprite(50, 140, 'cupid');
+    player.enableBody = true;
+
+  
     game.physics.arcade.enable(player);
 
 
@@ -183,30 +195,49 @@ function create() {
     
     player.body.gravity.y = 300;
     player.body.collideWorldBounds = true;
+    player.body.setSize(30,30,10,28);
+
 
  
-    player.animations.add('left', [0, 1, 2], 10, true);
-    player.animations.add('right', [4, 5, 6], 10, true);
+    player.animations.add('left', [0], 10, true);
+    player.animations.add('right', [1], 10, true);
 
    
     kitties = game.add.group();
-
-
     kitties.enableBody = true;
 
-    for (var i = 0; i < 12; i++)
+    for (var i = 0; i < 14; i++)
     {
-        //  Create a star inside of the 'stars' group
-        var kitty =  kitties.create((i * game.rnd.integerInRange(0, 800)), i*250, 'star');
-
-        //  Let gravity do its thing
-        kitty.body.gravity.y = 400;
+        var kitty =  kitties.create(game.rnd.integerInRange(0,800), i*250, 'kitty');
+        kitty.body.gravity.y = 800;
 
     }
 
+    for (var i = 0; i < 14; i++)
+    {
+        var kitty =  kitties.create(game.rnd.integerInRange(0,800), i*250, 'kitty');
+        kitty.body.gravity.y = 800;
+
+    }
+
+    spikes = game.add.group();
+    spikes.enableBody = true;
+
+    spike = spikes.create(0, -100, 'spikes');
+    spike.body.gravity.y = 5;
+
+    fx = game.add.audio('sfx');
+    fx.allowMultiple = true;
+
+    fx.addMarker('kittynoise', 148.8, .8);
+
+
+    music = game.add.audio('love');
+
+    this.spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys();
-    
+  
 }
 
 function update() {
@@ -214,24 +245,25 @@ function update() {
     //  Collide the player and the stars with the platforms
     game.physics.arcade.collide(player, platforms);
     game.physics.arcade.collide(kitties, platforms);
-
     //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
-    game.physics.arcade.overlap(player, stars, collectStar, null, this);
-
+    game.physics.arcade.overlap(player, kitties, collectStar, null, this);
+    game.physics.arcade.overlap(player, spikes, gameover, null, this);
+    game.physics.arcade.overlap(spikes, kitties, killkitty, null, this);
+    game.physics.arcade.overlap(spikes, platforms, killplat, null, this);
     //  Reset the players velocity (movement)
     player.body.velocity.x = 0;
 
     if (cursors.left.isDown)
     {
         //  Move to the left
-        player.body.velocity.x = -300;
+        player.body.velocity.x = -200;
 
         player.animations.play('left');
     }
     else if (cursors.right.isDown)
     {
         //  Move to the right
-        player.body.velocity.x = 300;
+        player.body.velocity.x = 200;
 
         player.animations.play('right');
     }
@@ -246,16 +278,33 @@ function update() {
     //  Allow the player to jump if they are touching the ground.
     if (cursors.up.isDown && player.body.touching.down)
     {
-        player.body.velocity.y = -350;
+        player.body.velocity.y = -100;
+    }
+
+    if (this.spaceKey.justPressed()){
+        music.play();
     }
 
 }
 
+function killkitty (spikes, kitty){
+    kitty.kill();
+}
+function killplat (spikes, ledge){
+    ledge.kill();
+}
 function collectStar (player, kitty) {
     
     // Removes the star from the screen
     kitty.kill();
+    fx.play('kittynoise');
+    score = score + 1;
 
+}
+
+function gameover (player, spike){
+    player.kill();
+    game.add.text(150, game.camera.y + 300, 'You collected ' + score + ' kitties before dying!', { fontSize: '32px', fill: '#000' });
 }
 
 function render(){
@@ -268,59 +317,59 @@ function render(){
 
 </div>
 <div id="readme">
-<h2>The Dog Catcher</h2>
+<h2>Cupid Can Haz Kittiez?</h2>
 <ul>
 
 <li><strong>High Concept:</strong>
-Dogs are appearing by the second, literally, and as a delegated dog catcher you must detain them all!
+As spikes descend upon you, your only goal is to catch as many kitties as possible before your inevitable doom.
 </li>
 
 <li><strong>Player Experience Goals:</strong>
-Players should get a sense of inner peace as they calmly capture each dog as they appear on the ledges, until the controls become screwy and you end up falling off the edge in rage.
+Players should feel challenged to grab as many cats as they can with the limited amount of time and restricted movement they have.
 </li>
 
 <li><strong>Genre:</strong>
-Simple arcade style game.
+Scrolling survival/objective game
 </li>
 
 <li><strong>Game play:</strong>
-This game uses the four arrow keys for movement (up, down, left, right). If the up button is pressed while the left or right button is held, the catcher will perform a short hop, allowing him to quickly reach platforms on the same level. If the up button is pressed while neither other button is pressed, the catcher will jump signifigantly higher and the catcher can be maneuvered in the air to the left or the right to allow the player to reach the higher platforms. If the player happens to fall into the abyss out of the game window, they must refresh the page by pressing F5 and start over. The game is set to go on for a set amount of dogs, however, the number is set signifigantly high to allow a lot of play time, so don't play til the dogs stop spawning.
+This game uses three arrow keys for movement (up, left, right). Left and right move your character respectively and the up arrow allows your character to jump, however not very high. The jump is merely meant to be used to jump across the small holes made by the platforms to allow the acquisition of extra kitties.
 </li>
 
 <li><strong>Prototype goal:</strong>
-The game is prototyping my use of player movement, as well as sprite reviving.
+This game prototypes the use of sound files, as well as camera scrolling.
 </li>
 
 <li><strong>Features:</strong>
-While I could have revived the dogs in all of the same spots, I decided to add a random number aspect to the reviving to allow the dogs to be spread out across the platforms in a randomized fashion so the game didn't become over-simplyfied.
+From the start of the game, the spikes descend upon your character. Quick movements and smart choices can allow you to grab more kitties than your last attempt, and some sweet music to go along with it.
 </li>
 
 <li><strong>Setting/Premise:</strong>
-There isn't much to the atmosphere of the game but I did take a while figuring out what kind of background I wanted to have to allow the player an easy way to determine where they could jump and where they shouldn't.
+There's no reason why spikes should be descending from the sky, but that just adds to the adventure.
 </li>
 
 <li><strong>Story:</strong>
-N/A
+Cupid has dropped his box of kittens and they have scattered throughout the various platforms, waiting to be rescued.
 </li>
 
 <li><strong>Target Audience:</strong>
-A few of my friends have played my game so far so they could be my target audience. Little kids and casual adults would probably enjoy it for its play time.
+Easily could be a kid's game, even if some of the decision making would require a more adaptive brain.
 </li>
 
 <li><strong>Play time:</strong>
-The game goes on for quite a while but the entirety of the game and its controls can be played and mastered in a few minutes.
+The descending spikes limit the game time to about a minute.
 </li>
 
 <li><strong>Strategies:</strong>
-Determining when to use the running jump and when to use the high jump mechanic.
+Determine when you can reach a kitten, and when you just need to fall faster than the spikes to avoid dying.
 </li>
 
 <li><strong>Prototype Assets:</strong>
-The sprites, dogs and windows were taken from Google. All rights reserved to the owners of these pictures.
+The cupid and kitty sprites were taken from Google and all rights reserved to the authors.
 </li>
 
 <li><strong>Prototype Closest Other Game:</strong>
-My First Phaser Game from PhotonStorm gave me a lot of ideas for my game.
+I used to play a game called Falldown which had a similar motive to this game, so that influenced my decision a lot.
 </li>
 
 </ul>
